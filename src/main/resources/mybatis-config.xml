@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<!-- 驼峰命名规则 -->
+		<setting name="mapUnderscoreToCamelCase" value="true"></setting>
+		<!-- 日志技术 -->
+		<setting name="logImpl" value="log4j"/>
+	</settings>
+	<!-- 使用别名 -->
+	<typeAliases >
+		<package name="com.vi.crud.bean"/>
+	</typeAliases>
+	<plugins>
+		<plugin interceptor="com.github.pagehelper.PageInterceptor"></plugin>
+	</plugins>
+</configuration>
