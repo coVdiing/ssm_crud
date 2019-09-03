@@ -12,7 +12,7 @@ public class Msg {
 	private Map<String, Object> extend = new HashMap<String, Object>();
 
 	// 返回处理成功时的数据
-	public Msg success() {
+	public static Msg success() {
 		Msg msg = new Msg();
 		msg.setCode(100);
 		msg.setMessage("处理成功");
