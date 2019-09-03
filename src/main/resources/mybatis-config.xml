@@ -13,6 +13,8 @@
 		<package name="com.vi.crud.bean"/>
 	</typeAliases>
 	<plugins>
-		<plugin interceptor="com.github.pagehelper.PageInterceptor"></plugin>
+		<plugin interceptor="com.github.pagehelper.PageInterceptor">
+			<property name="reasonable" value="true"></property>
+		</plugin>
 	</plugins>
 </configuration>

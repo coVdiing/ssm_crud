@@ -20,7 +20,7 @@
 </head>
 <body>
 	<!-- 添加员工模态框 -->
-	<div class="modal fade" id="empAddModal" tabindex="-1" role="dialog"
+	<div class="modal fade" id="emp_add_modal" tabindex="-1" role="dialog"
 		aria-labelledby="myModalLabel">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -71,7 +71,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary">保存</button>
+					<button type="button" class="btn btn-primary" id="emp_save_btn">保存</button>
 				</div>
 			</div>
 		</div>
@@ -119,6 +119,7 @@
 		</div>
 	</div>
 	<script type="text/javascript">
+		var totalPages;
 		$(function() {
 			//加载完成跳转到页码1
 			to_page(1);
@@ -175,6 +176,7 @@
 		function build_pageInfo(result) {
 			$("#page_info_area").empty();
 			var pageInfo = result.extend.pageInfo;
+			totalPages = pageInfo.pages;
 			var pageInfoArea = $("#page_info_area").append(
 					"当前第" + pageInfo.pageNum + "页,共" + pageInfo.pages + "页，共"
 							+ pageInfo.total + "条数据");
@@ -243,18 +245,35 @@
 				url:"${APP_PATH}/depts",
 				success:function(result) {
 					//对数据进行拼接，填充到select中
-					var select = $("#empAddModal select");
+					var select = $("#emp_add_modal select");
+					//对下拉框进行清空
+					select.empty();
 					$.each(result.extend.depts,function(index,dept) {
 						select.append($("<option></option>").append(dept.deptName).attr("value",dept.deptId));
 					});
 				}
 			});
-			$("#empAddModal").modal({
+			$("#emp_add_modal").modal({
 				backdrop : "static"
 			});
 		}); 
 		
-
+		//点击保存按钮，保存新增的员工，跳转到末页查看数据
+		$("#emp_save_btn").click(function(){
+			//发起ajax请求
+ 			$.ajax({
+				url:"${APP_PATH}/emp",
+				type:"POST",
+				data:$("#emp_add_modal form").serialize(),
+				success:function(result) {
+					//保存成功以后，1.关闭模态框
+					$("#emp_add_modal").modal('hide');
+					//跳转到末页，查看新添加的数据
+					to_page(totalPages+1);
+				}
+			});
+		}); 
+		
 	</script>
 </body>
 </html>
