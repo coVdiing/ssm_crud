@@ -246,6 +246,8 @@
 		//点击按钮，弹出一个模态框
 		$("#emp_add_modal_btn").click(
 				function() {
+					//弹出模态框以后，重置表单数据
+					$("#emp_add_modal form")[0].reset();
 					//点击按钮就发送一个ajax请求，查询全部部门信息
 					$.ajax({
 						url : "${APP_PATH}/depts",
@@ -266,10 +268,39 @@
 					});
 				});
 
+		//用户输完用户名，发送ajax请求访问服务器，查询该用户名是否可用
+		$("#empName_add_input").change(
+				function() {
+					var empName = this.value;
+					$
+							.ajax({
+								url : "${APP_PATH}/checkUser",
+								type : "POST",
+								data : "empName=" + empName,
+								success : function(result) {
+									if (result.code == 100) {
+										showValidateMsg("#empName_add_input",
+												"success", "用户名可用");
+										$("#emp_save_btn").attr("ajaxValidate",
+												"success");
+									} else {
+										showValidateMsg("#empName_add_input",
+												"fail", "用户名不可用");
+										$("#emp_save_btn").attr("ajaxValidate",
+												"fail");
+									}
+								}
+							});
+				});
+
 		//点击保存按钮，保存新增的员工，跳转到末页查看数据
 		$("#emp_save_btn").click(function() {
 			//发起请求前对输入进行校验
-			if(!empAddValidate()){
+			if (!empAddValidate()) {
+				return false;
+			}
+			//发起请求之前还要确定ajax检验用户名的结果
+			if ($("#emp_save_btn").attr("ajaxValidate") == "fail") {
 				return false;
 			}
 			//发起ajax请求
@@ -291,21 +322,22 @@
 			//用户名
 			var empName = $("#empName_add_input").val();
 			//用户名可以由6-16位由数字、大小写字母和中文-_组成
-			var regEmpName = /^[0-9a-zA-Z-_\u2E80-\u9FFF]{4,16}$/;
+			var regEmpName = /^[0-9a-zA-Z-_\u2E80-\u9FFF]{2,16}$/;
 			var email = $("#email_add_input").val();
 			var regEmail = /^([0-9A-Za-z\-_\.]+)@([0-9a-z]+\.[a-z]{2,3}(\.[a-z]{2})?)$/;
 			//用户名校验
 			if (!regEmpName.test(empName)) {
-				showValidateMsg("#empName_add_input","fail","用户名可以由6-16位由数字、大小写字母和中文-_组成");
+				showValidateMsg("#empName_add_input", "fail",
+						"用户名可以由2-16位由数字、大小写字母和中文-_组成");
 				return false;
 			} else {
-				showValidateMsg("#empName_add_input","success","");
+				showValidateMsg("#empName_add_input", "success", "");
 			}
 			if (!regEmail.test(email)) {
-				showValidateMsg("#email_add_input","fail","邮箱格式错误");
+				showValidateMsg("#email_add_input", "fail", "邮箱格式错误");
 				return false;
 			} else {
-				showValidateMsg("#email_add_input","success","");
+				showValidateMsg("#email_add_input", "success", "");
 			}
 			return true;
 		}
@@ -315,10 +347,10 @@
 			//开始显示之前先清除
 			$(ele).parent().removeClass("has-success has-error");
 			$(ele).next("span").text("");
-			if(status=="success"){
+			if (status == "success") {
 				$(ele).parent().addClass("has-success");
 				$(ele).next("span").text(message);
-			} else if(status == "fail") {
+			} else if (status == "fail") {
 				$(ele).parent().addClass("has-error");
 				$(ele).next("span").text(message);
 			}
