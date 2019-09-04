@@ -37,14 +37,16 @@
 							<label class="col-sm-2 control-label">empName</label>
 							<div class="col-sm-10">
 								<input type="text" class="form-control" id="empName_add_input"
-									name="empName" placeholder="empName">
+									name="empName" placeholder="empName"> <span
+									class="help-block"></span>
 							</div>
 						</div>
 						<div class="form-group">
 							<label class="col-sm-2 control-label">email</label>
 							<div class="col-sm-10">
 								<input type="text" class="form-control" id="email_add_input"
-									name="email" placeholder="email">
+									name="email" placeholder="email"> <span
+									class="help-block"></span>
 							</div>
 						</div>
 						<div class="form-group">
@@ -141,7 +143,10 @@
 		function build_empTable(result) {
 			$("#emp_table tbody").empty();
 			var emps = result.extend.pageInfo.list;
-			$.each(	emps,function(index, emp) {
+			$
+					.each(
+							emps,
+							function(index, emp) {
 								var empTr = $("<tr></tr>");
 								var empidTd = $("<td></td>").append(emp.empId);
 								var empNameTd = $("<td></td>").append(
@@ -237,43 +242,87 @@
 			ul.append(nextPageLi).append(lastPageLi);
 			$("#page_info_nav").append(nav).append(ul);
 		}
-		
+
 		//点击按钮，弹出一个模态框
- 		$("#emp_add_modal_btn").click(function() {
- 			//点击按钮就发送一个ajax请求，查询全部部门信息
-			$.ajax({
-				url:"${APP_PATH}/depts",
-				success:function(result) {
-					//对数据进行拼接，填充到select中
-					var select = $("#emp_add_modal select");
-					//对下拉框进行清空
-					select.empty();
-					$.each(result.extend.depts,function(index,dept) {
-						select.append($("<option></option>").append(dept.deptName).attr("value",dept.deptId));
+		$("#emp_add_modal_btn").click(
+				function() {
+					//点击按钮就发送一个ajax请求，查询全部部门信息
+					$.ajax({
+						url : "${APP_PATH}/depts",
+						success : function(result) {
+							//对数据进行拼接，填充到select中
+							var select = $("#emp_add_modal select");
+							//对下拉框进行清空
+							select.empty();
+							$.each(result.extend.depts, function(index, dept) {
+								select.append($("<option></option>").append(
+										dept.deptName).attr("value",
+										dept.deptId));
+							});
+						}
 					});
-				}
-			});
-			$("#emp_add_modal").modal({
-				backdrop : "static"
-			});
-		}); 
-		
+					$("#emp_add_modal").modal({
+						backdrop : "static"
+					});
+				});
+
 		//点击保存按钮，保存新增的员工，跳转到末页查看数据
-		$("#emp_save_btn").click(function(){
+		$("#emp_save_btn").click(function() {
+			//发起请求前对输入进行校验
+			if(!empAddValidate()){
+				return false;
+			}
 			//发起ajax请求
- 			$.ajax({
-				url:"${APP_PATH}/emp",
-				type:"POST",
-				data:$("#emp_add_modal form").serialize(),
-				success:function(result) {
+			$.ajax({
+				url : "${APP_PATH}/emp",
+				type : "POST",
+				data : $("#emp_add_modal form").serialize(),
+				success : function(result) {
 					//保存成功以后，1.关闭模态框
 					$("#emp_add_modal").modal('hide');
 					//跳转到末页，查看新添加的数据
-					to_page(totalPages+1);
+					to_page(totalPages + 1);
 				}
 			});
-		}); 
-		
+		});
+
+		//校验用户输入信息
+		function empAddValidate() {
+			//用户名
+			var empName = $("#empName_add_input").val();
+			//用户名可以由6-16位由数字、大小写字母和中文-_组成
+			var regEmpName = /^[0-9a-zA-Z-_\u2E80-\u9FFF]{4,16}$/;
+			var email = $("#email_add_input").val();
+			var regEmail = /^([0-9A-Za-z\-_\.]+)@([0-9a-z]+\.[a-z]{2,3}(\.[a-z]{2})?)$/;
+			//用户名校验
+			if (!regEmpName.test(empName)) {
+				showValidateMsg("#empName_add_input","fail","用户名可以由6-16位由数字、大小写字母和中文-_组成");
+				return false;
+			} else {
+				showValidateMsg("#empName_add_input","success","");
+			}
+			if (!regEmail.test(email)) {
+				showValidateMsg("#email_add_input","fail","邮箱格式错误");
+				return false;
+			} else {
+				showValidateMsg("#email_add_input","success","");
+			}
+			return true;
+		}
+
+		//显示校验结果信息
+		function showValidateMsg(ele, status, message) {
+			//开始显示之前先清除
+			$(ele).parent().removeClass("has-success has-error");
+			$(ele).next("span").text("");
+			if(status=="success"){
+				$(ele).parent().addClass("has-success");
+				$(ele).next("span").text(message);
+			} else if(status == "fail") {
+				$(ele).parent().addClass("has-error");
+				$(ele).next("span").text(message);
+			}
+		}
 	</script>
 </body>
 </html>
