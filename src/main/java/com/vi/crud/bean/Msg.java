@@ -20,7 +20,7 @@ public class Msg {
 	}
 	
 	//返回处理失败时的数据
-	public Msg fail() {
+	public static Msg fail() {
 		Msg msg = new Msg();
 		msg.setCode(200);
 		msg.setMessage("处理失败");
