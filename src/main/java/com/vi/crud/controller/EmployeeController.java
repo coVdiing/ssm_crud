@@ -2,7 +2,6 @@ package com.vi.crud.controller;
 
 import java.util.List;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +20,17 @@ import com.vi.crud.service.EmployeeService;
 public class EmployeeController {
 	@Autowired
 	EmployeeService employeeService;
+	
+	@ResponseBody
+	@RequestMapping("/checkUser")
+	public Msg checkUser(@RequestParam("empName")String empName){
+		boolean flag = employeeService.checkUser(empName);
+		if(flag){
+			return Msg.success();
+		} else {
+			return Msg.fail();
+		}
+	}
 	
 	@RequestMapping("/emps")
 	@ResponseBody
