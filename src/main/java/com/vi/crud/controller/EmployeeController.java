@@ -21,14 +21,24 @@ public class EmployeeController {
 	@Autowired
 	EmployeeService employeeService;
 	
+	/**
+	 * 检验用户名是否唯一
+	 * @param empName
+	 * @return
+	 */
 	@ResponseBody
 	@RequestMapping("/checkUser")
 	public Msg checkUser(@RequestParam("empName")String empName){
+		//先检验用户名格式是否正确
+		String regx = "^[0-9a-zA-Z-_\u2E80-\u9FFF]{4,16}$";
+		if(!empName.matches(regx)) {
+			return Msg.fail().add("validateMessage", "用户名可以由6-16位由数字、大小写字母和中文-_组成");
+		}
 		boolean flag = employeeService.checkUser(empName);
 		if(flag){
 			return Msg.success();
 		} else {
-			return Msg.fail();
+			return Msg.fail().add("validateMessage", "用户名不可用");
 		}
 	}
 	
