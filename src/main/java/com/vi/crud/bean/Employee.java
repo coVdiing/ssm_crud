@@ -1,12 +1,16 @@
 package com.vi.crud.bean;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Pattern;
+
 public class Employee {
     private Integer empId;
-
+    
+    @Pattern(regexp="^[a-zA-Z0-9-_\\u2E80-\\u9FFF]{4,16}",message="用户名必须由6-16位由数字、大小写字母或中文-_组成")
     private String empName;
 
     private String gender;
-
+    @Email
     private String email;
 
     private Integer dId;

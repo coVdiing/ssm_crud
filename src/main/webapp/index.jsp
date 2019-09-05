@@ -303,9 +303,9 @@
 		//点击保存按钮，保存新增的员工，跳转到末页查看数据
 		$("#emp_save_btn").click(function() {
 			//发起请求前对输入进行校验
-			if (!empAddValidate()) {
+		/* 	if (!empAddValidate()) {
 				return false;
-			}
+			} */
 			//发起请求之前还要确定ajax检验用户名的结果
 			if ($("#emp_save_btn").attr("ajaxValidate") == "fail") {
 				return false;
@@ -316,10 +316,21 @@
 				type : "POST",
 				data : $("#emp_add_modal form").serialize(),
 				success : function(result) {
-					//保存成功以后，1.关闭模态框
-					$("#emp_add_modal").modal('hide');
-					//跳转到末页，查看新添加的数据
-					to_page(totalPages + 1);
+					if(result.code == 100) {	
+						//保存成功以后，1.关闭模态框
+						$("#emp_add_modal").modal('hide');
+						//跳转到末页，查看新添加的数据
+						to_page(totalPages + 1);
+					} else {
+						if(result.extend.errorField.empName != undefined) {
+							showValidateMsg("#empName_add_input","fail",result.extend.errorField.empName);
+							return false;
+						}
+						if(result.extend.errorField.email != undefined) {
+							showValidateMsg("#email_add_input","fail",result.extend.errorField.email);
+							return false;
+						}
+					}
 				}
 			});
 		});
