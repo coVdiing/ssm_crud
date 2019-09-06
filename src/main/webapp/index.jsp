@@ -19,6 +19,66 @@
 	src="${APP_PATH}/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 </head>
 <body>
+	<!-- 修改员工模态框 -->
+	<div class="modal fade" id="emp_update_modal" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">员工修改</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal">
+						<div class="form-group">
+							<label class="col-sm-2 control-label">empName</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="empName_update_input"
+									name="empName" placeholder="empName"> <span
+									class="help-block"></span>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">email</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="email_update_input"
+									name="email" placeholder="email"> <span
+									class="help-block"></span>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">gender</label>
+							<div class="col-sm-10">
+								<label class="radio-inline"> <input type="radio"
+									name="gender" id="gender1_update_input" value="M"
+									checked="checked"> 男
+								</label> <label class="radio-inline"> <input type="radio"
+									name="gender" id="gender2_update_input" value="F"> 女
+								</label>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">deptName</label>
+							<div class="col-sm-4">
+								<!-- 部门提交id即可 -->
+								<select class="form-control" id="emp_update_select"name="dId">
+
+								</select>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary" id="emp_save_btn">保存</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
 	<!-- 添加员工模态框 -->
 	<div class="modal fade" id="emp_add_modal" tabindex="-1" role="dialog"
 		aria-labelledby="myModalLabel">
@@ -157,13 +217,13 @@
 								var deptNameTd = $("<td></td>").append(
 										emp.department.deptName);
 								var editBtn = $("<button></button>")
-										.addClass("btn btn-primary")
+										.addClass("btn btn-primary editBtn")
 										.append(
 												($("<span></span>")
 														.addClass("glyphicon glyphicon-pencil")))
 										.append("编辑");
 								var delBtn = $("<button></button>")
-										.addClass("btn btn-danger")
+										.addClass("btn btn-danger deleteBtn")
 										.append(
 												($("<span></span>")
 														.addClass("glyphicon glyphicon-trash")))
@@ -251,31 +311,44 @@
 			$(ele).find(".help-block").text("");
 		}
 		
-		//点击按钮，弹出一个模态框
+		//点击新增按钮，弹出一个模态框
 		$("#emp_add_modal_btn").click(
 				function() {
 					//弹出模态框以后，重置表单数据和表单样式
 					formReset("#emp_add_modal form");
 					//点击按钮就发送一个ajax请求，查询全部部门信息
-					$.ajax({
-						url : "${APP_PATH}/depts",
-						success : function(result) {
-							//对数据进行拼接，填充到select中
-							var select = $("#emp_add_modal select");
-							//对下拉框进行清空
-							select.empty();
-							$.each(result.extend.depts, function(index, dept) {
-								select.append($("<option></option>").append(
-										dept.deptName).attr("value",
-										dept.deptId));
-							});
-						}
-					});
+					getDepts("#emp_add_modal select");
 					$("#emp_add_modal").modal({
 						backdrop : "static"
 					});
 				});
-
+		
+		//点击编辑按钮，弹出模态框，对员工进行修改操作
+		$(document).on("click",".editBtn",function() {
+			getDepts("#emp_update_modal select");
+			$("#emp_update_modal").modal({
+				backdrop:"static"
+			});
+		});
+		
+		//查询部门信息
+		function getDepts(ele){
+			//对下拉框进行清空
+			$(ele).empty();
+			$.ajax({
+				url : "${APP_PATH}/depts",
+				success : function(result) {
+					//对数据进行拼接，填充到select中
+					$.each(result.extend.depts, function(index, dept) {
+						var optionEle = $("<option></option>").append(
+								dept.deptName).attr("value",
+								dept.deptId);
+						optionEle.appendTo($(ele));
+					});
+				}
+			});
+		}
+		
 		//用户输完用户名，发送ajax请求访问服务器，查询该用户名是否可用
 		$("#empName_add_input").change(
 				function() {
