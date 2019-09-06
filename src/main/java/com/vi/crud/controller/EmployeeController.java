@@ -70,6 +70,12 @@ public class EmployeeController {
 		return result.add("pageInfo", pageInfo);
 	}
 	
+	/**
+	 * 保存员工
+	 * @param employee
+	 * @param result
+	 * @return
+	 */
 	@RequestMapping(value="/emp",method=RequestMethod.POST)
 	@ResponseBody
 	public Msg saveEmp(@Valid Employee employee,BindingResult result) {
@@ -86,5 +92,17 @@ public class EmployeeController {
 		}
 		employeeService.save(employee);
 		return Msg.success();
+	}
+	
+	/**
+	 * 更新员工
+	 * @param employee
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/emp/{empId}",method=RequestMethod.PUT)
+	public Msg saveEmp(Employee employee){
+		employeeService.updateEmp(employee);
+		return Msg.success().add("emp", employee.toString());
 	}
 }
