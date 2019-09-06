@@ -20,8 +20,8 @@
 </head>
 <body>
 	<!-- 修改员工模态框 -->
-	<div class="modal fade" id="emp_update_modal" tabindex="-1" role="dialog"
-		aria-labelledby="myModalLabel">
+	<div class="modal fade" id="emp_update_modal" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -36,9 +36,9 @@
 						<div class="form-group">
 							<label class="col-sm-2 control-label">empName</label>
 							<div class="col-sm-10">
-								<input type="text" class="form-control" id="empName_update_input"
-									name="empName" placeholder="empName"> <span
-									class="help-block"></span>
+								<p class="form-control-static" id="empName_update_static"
+									name="empName"></p>
+								<span class="help-block"></span>
 							</div>
 						</div>
 						<div class="form-group">
@@ -64,7 +64,7 @@
 							<label class="col-sm-2 control-label">deptName</label>
 							<div class="col-sm-4">
 								<!-- 部门提交id即可 -->
-								<select class="form-control" id="emp_update_select"name="dId">
+								<select class="form-control" id="emp_update_select" name="dId">
 
 								</select>
 							</div>
@@ -73,12 +73,12 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" id="emp_save_btn">保存</button>
+					<button type="button" class="btn btn-primary" id="emp_update_btn">更新</button>
 				</div>
 			</div>
 		</div>
 	</div>
-	
+
 	<!-- 添加员工模态框 -->
 	<div class="modal fade" id="emp_add_modal" tabindex="-1" role="dialog"
 		aria-labelledby="myModalLabel">
@@ -230,6 +230,10 @@
 										.append("删除");
 								var btnTd = $("<td></td>").append(editBtn).append(" ")
 										.append(delBtn);
+								//给编辑按钮的属性中加入员工id
+								editBtn.attr("editId",emp.empId);
+								//给删除按钮中的属性加入员工id
+								delBtn.attr("delId",emp.empId);
 								empTr = empTr.append(empidTd).append(empNameTd)
 										.append(genderTd).append(emailTd)
 										.append(deptNameTd).append(btnTd);
@@ -325,11 +329,31 @@
 		
 		//点击编辑按钮，弹出模态框，对员工进行修改操作
 		$(document).on("click",".editBtn",function() {
+			//查出部门信息
 			getDepts("#emp_update_modal select");
+			//点击编辑按钮，需要对员工信息进行回显
+			getEmp($(this).attr("editId"));
 			$("#emp_update_modal").modal({
 				backdrop:"static"
 			});
 		});
+		
+		//查询员工信息
+		function getEmp(id){
+			//发起ajax请求
+			$.ajax({
+				url:"${APP_PATH}/emp/"+id,
+				type:"GET",
+				success:function(result) {
+					//将查到的员工信息显示在模态框上
+					var emp = result.extend.emp;
+					$("#empName_update_static").text(emp.empName);
+					$("#email_update_input").val(emp.email);
+					$("#emp_update_modal input[name=gender]").val([emp.gender]);
+					$("#emp_update_modal select").val([emp.dId]);
+				}
+			});
+		}
 		
 		//查询部门信息
 		function getDepts(ele){
@@ -376,9 +400,9 @@
 		//点击保存按钮，保存新增的员工，跳转到末页查看数据
 		$("#emp_save_btn").click(function() {
 			//发起请求前对输入进行校验
-		/* 	if (!empAddValidate()) {
+		 	if (!empAddValidate()) {
 				return false;
-			} */
+			} 
 			//发起请求之前还要确定ajax检验用户名的结果
 			if ($("#emp_save_btn").attr("ajaxValidate") == "fail") {
 				return false;
