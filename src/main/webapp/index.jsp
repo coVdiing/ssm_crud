@@ -181,7 +181,10 @@
 		</div>
 	</div>
 	<script type="text/javascript">
+		//总记录数，新增员工时会用到
 		var totalPages;
+		//当前页码，更新员工信息时会用到
+		var currentPage;
 		$(function() {
 			//加载完成跳转到页码1
 			to_page(1);
@@ -255,6 +258,8 @@
 		function build_pageNav(result) {
 			$("#page_info_nav").empty();
 			var pageInfo = result.extend.pageInfo;
+			//把当前页码赋给全局变量，更新员工信息时会用到
+			currentPage = pageInfo.pageNum;
 			var nav = $("<nav></nav>");
 			var ul = $("<ul></ul>").addClass("pagination");
 			//首页
@@ -333,6 +338,8 @@
 			getDepts("#emp_update_modal select");
 			//点击编辑按钮，需要对员工信息进行回显
 			getEmp($(this).attr("editId"));
+			//把员工id传给更新按钮
+			$("#emp_update_btn").attr("empId",$(this).attr("editId"));
 			$("#emp_update_modal").modal({
 				backdrop:"static"
 			});
@@ -431,7 +438,31 @@
 				}
 			});
 		});
-
+		
+		//点击更新按钮，对员工信息进行更新
+		$("#emp_update_btn").click(function() {
+			//对邮箱格式进行校验
+			var email = $("#email_update_input").val();
+			var regEmail = /^([0-9A-Za-z\-_\.]+)@([0-9a-z]+\.[a-z]{2,3}(\.[a-z]{2})?)$/;
+			if (!regEmail.test(email)) {
+				showValidateMsg("#email_update_input", "fail", "邮箱格式错误");
+				return false;
+			} else {
+				showValidateMsg("#email_update_input", "success", "");
+			}
+			//发送ajax请求更新员工
+			$.ajax({
+				url:"${APP_PATH}/emp/"+$(this).attr("empId"),
+				type:"PUT",
+				data:$("#emp_update_modal form").serialize(),
+				success:function(result){
+					//修改成功以后关闭模态框，跳转到对应的页面
+					$("#emp_update_modal").modal("hide");
+					to_page(currentPage);
+				}
+			});
+		});
+		
 		//校验用户输入信息
 		function empAddValidate() {
 			//用户名
