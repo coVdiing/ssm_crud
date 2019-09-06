@@ -48,4 +48,13 @@ public class EmployeeService {
 	public Employee getEmp(Integer id) {
 		return employeeMapper.selectByPrimaryKey(id);
 	}
+	
+	/**
+	 * 更新员工
+	 * @param employee
+	 */
+	public void updateEmp(Employee employee) {
+		// TODO Auto-generated method stub
+		employeeMapper.updateByPrimaryKeySelective(employee);
+	}
 }
