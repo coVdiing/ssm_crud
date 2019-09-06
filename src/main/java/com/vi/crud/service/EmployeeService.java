@@ -19,6 +19,10 @@ public class EmployeeService {
 		return employeeMapper.selectByExampleWithDept(null);
 	}
 	
+	/**
+	 * 保存员工
+	 * @param employee
+	 */
 	public void save(Employee employee) {
 		employeeMapper.insertSelective(employee);
 	}
@@ -34,5 +38,14 @@ public class EmployeeService {
 		criteria.andEmpNameEqualTo(empName);
 		long count = employeeMapper.countByExample(example);
 		return count == 0;
+	}
+
+	/**
+	 * 根据id查找员工
+	 * @param id
+	 * @return
+	 */
+	public Employee getEmp(Integer id) {
+		return employeeMapper.selectByPrimaryKey(id);
 	}
 }
