@@ -150,7 +150,7 @@
 		<div class="row">
 			<div class="col-md-4 col-md-offset-8">
 				<button class="btn btn-primary" id="emp_add_modal_btn">新增</button>
-				<button class="btn btn-danger">删除</button>
+				<button class="btn btn-danger" id="emp_delete_all_btn">删除</button>
 			</div>
 		</div>
 		<!-- 表格 -->
@@ -352,7 +352,7 @@
 		//点击删除按钮，根据id删除单个员工
 		$(document).on("click",".deleteBtn",function() {
 			var empId = $(this).attr("delId");
-			var empName = $(this).parents("tr").find("td:eq(1)").text();
+			var empName = $(this).parents("tr").find("td:eq(2)").text();
 			//发送确认框，是否删除员工
 			if(confirm("是否删除["+empName+"]?")) {
 				//确认删除后发送ajax请求
@@ -531,13 +531,38 @@
 		
 		//给单个的checkbox添加点击事件，从而使全选框和checkbox们保持相同的状态
 		$(document).on("click",".check_item",function() {
-			var flag = $(".check_item").length == $(".check_item:checked");
+			var flag = $(".check_item").length == $(".check_item:checked").length;
 			if(flag) {
 				$("#check_all").prop("checked",true);
 			} else {
 				$("#check_all").prop("checked",false);
 			}
 		});
-	</script>
-</body>
-</html>
+		
+		//给批量删除按钮添加点击事件
+		$("#emp_delete_all_btn").click(function(){
+			//获取当前被选中的员工的id和姓名
+			var empIds = "";
+			var empNames = "";
+			$.each($(".check_item:checked"),function(){
+				empIds += $(this).parents("tr").find("td:eq(1)").text()+"-";
+				empNames += $(this).parents("tr").find("td:eq(2)").text()+",";
+			});
+			//删掉多余的符号
+			empIds.substring(0,empIds.length-1);
+			empNames.substring(0,empNames.length-1);
+			if(confirm("确认要删除["+empNames+"]?")) {
+				//确认删除发送ajax请求
+				$.ajax({
+					url:"${APP_PATH}/emp/"+empIds,
+					type:"DELETE",
+					success:function(result) {
+						alert(result.message);
+						//删除以后跳转到本页
+						to_page(currentPage);
+					}
+				})
+			}
+		});
+		
+</script>
