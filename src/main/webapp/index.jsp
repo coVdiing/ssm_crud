@@ -345,6 +345,24 @@
 			});
 		});
 		
+		//点击删除按钮，根据id删除单个员工
+		$(document).on("click",".deleteBtn",function() {
+			var empId = $(this).attr("delId");
+			var empName = $(this).parents("tr").find("td:eq(1)").text();
+			//发送确认框，是否删除员工
+			if(confirm("是否删除["+empName+"]?")) {
+				//确认删除后发送ajax请求
+				$.ajax({
+					url:"${APP_PATH}/emp/"+empId,
+					type:"DELETE",
+					success:function(result) {
+						alert(result.message);
+						//回到当前页
+						to_page(currentPage);
+					}
+				});
+			}
+		});
 		//查询员工信息
 		function getEmp(id){
 			//发起ajax请求
