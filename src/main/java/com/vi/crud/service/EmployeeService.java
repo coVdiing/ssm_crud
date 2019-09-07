@@ -57,4 +57,12 @@ public class EmployeeService {
 		// TODO Auto-generated method stub
 		employeeMapper.updateByPrimaryKeySelective(employee);
 	}
+	
+	/**
+	 * 根据id删除单个员工
+	 * @param id
+	 */
+	public void deleteEmp(Integer id) {
+		employeeMapper.deleteByPrimaryKey(id);
+	}
 }
