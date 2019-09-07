@@ -1,5 +1,6 @@
 package com.vi.crud.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,14 +108,26 @@ public class EmployeeController {
 	}
 	
 	/**
-	 * 根据id删除单个员工
+	 * 根据id删除单个员工或者批量删除员工,通过传入的参数进行判断
 	 * @param id
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/emp/{id}",method=RequestMethod.DELETE)
-	public Msg deleteEmpById(@PathVariable("id") Integer id) {
-		employeeService.deleteEmp(id);
+	@RequestMapping(value="/emp/{ids}",method=RequestMethod.DELETE)
+	public Msg deleteEmpById(@PathVariable("ids") String ids) {
+		if(!ids.contains("-")){
+			//如果ids中没有"-"，认为传入的是单个id，进行单个删除操作
+			Integer id = Integer.parseInt(ids);
+			employeeService.deleteEmp(id);
+		} else {
+			//如果ids中有"-"，认为传入的是多个id，将ids解析进行批量删除操作
+			List<Integer> id = new ArrayList<Integer>();
+			String[] idStr = ids.split("-");
+			for(String str : idStr) {
+				id.add(Integer.parseInt(str));
+			}
+			employeeService.deleteBatch(id);
+		}
 		return Msg.success();
 	}
 }
