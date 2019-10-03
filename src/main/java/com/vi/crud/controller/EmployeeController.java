@@ -66,7 +66,7 @@ public class EmployeeController {
 		List<Employee> emps = employeeService.getAll();
 		//经过视图解析器处理，会加上前缀/WEB-INF/views/和后缀.jsp
 		//把查询出的结果封装到PageInfo中
-		PageInfo pageInfo = new PageInfo(emps);
+		PageInfo pageInfo = new PageInfo(emps,5);
 		Msg result = new Msg();
 		return result.add("pageInfo", pageInfo);
 	}
